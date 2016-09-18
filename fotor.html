@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset=utf-8>
+	<meta name=description content="">
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<title>Document</title>
+	<style>
+		#picBox{
+			background: url("image/man.jpg");
+			height: 300px;
+			width: 300px;
+			position: relative;
+		}
+		.pic{
+			position: absolute;
+			background: url("image/man.jpg");
+			height: 100px;
+			width: 100px;
+			border:3px solid #fff;
+			display: none;
+		}
+
+	</style>
+
+</head>
+<body>
+	<h1>拼图游戏 <button id="startBtn">go</button></h1>
+	<div id="picBox">
+		<div class="pic" data-index="1" style="left:0px;top:0px;background-position:0px 0px;">0</div>
+		<div class="pic" data-index="2"  style="left:100px;top:0px;background-position:-100px 0px;">1</div>
+		<div class="pic" data-index="3"  style="left:200px;top:0px;background-position:-200px 0px;">2</div>
+		<div class="pic" data-index="4"  style="left:0px;top:100px;background-position:0px -100px;">3</div>
+		<div class="pic" data-index="5"  style="left:100px;top:100px;background-position:-100px -100px;">4</div>
+		<div class="pic" data-index="6"  style="left:200px;top:100px;background-position:-200px -100px;">5</div>
+		<div class="pic" data-index="7"  style="left:0px;top:200px;background-position:0px -200px;">6</div>
+		<div class="pic" data-index="8"  style="left:100px;top:200px;background-position:-100px -200px;">7</div>
+		<div class="pic" data-index="9"  style="left:200px;top:200px;background-position:-200px -200px;">8</div>
+	</div>
+	<script>
+	// var pics = picBox.getElementsByTagName("div");
+		//var pics = document.querySelector(".pic");
+		var pics = document.querySelectorAll(".pic");
+		var dx =0,dy = 0; //保存按下时，与元素的左上角的距离
+
+		// var is;
+		var picBox = document.getElementById("picBox");
+
+		var startBtn= document.getElementById("startBtn");
+		startBtn.addEventListener("touchstart",function(){
+			console.info("abc");
+
+			for (var i = 0; i < pics.length; i++) {
+				pics[i].style.display="block";
+			}
+			picBox.style.background="#fff";
+
+
+
+
+			//打乱
+			//思路：随机找到2个元素，交换
+			for (var i = 0; i < 5; i++) {
+				//a,b [0,8]
+				var a = Math.floor(Math.random()*9);
+				var b = Math.floor(Math.random()*9);
+				
+				if(a != b){
+					change(a,b);
+					console.info(a,b);
+				}
+				
+			}
+			
+		});
+
+		function change(a,b){
+			var aEle = pics[a];
+			var bEle = pics[b];
+
+			aEle.style.transition="all 0.5s";
+			bEle.style.transition="all 0.5s";
+
+			var _left ;
+			_left = aEle.style.left;
+			aEle.style.left = bEle.style.left;
+			bEle.style.left = _left;
+
+			var _top ;
+			_top = aEle.style.top;
+			aEle.style.top = bEle.style.top;
+			bEle.style.top = _top;
+
+
+			var _index;
+			_index = aEle.getAttribute("data-index");//获取元素t的data-index属性
+
+			aEle.setAttribute("data-index",bEle.getAttribute("data-index") );//元素t的data-index属性改成e.target这个元素的data-index
+
+			// //元素e.target的data-index属性改成 _index
+			bEle.setAttribute("data-index",_index);
+		}
+		
+		
+
+		for (var i = 0; i < pics.length; i++) {
+			pics[i].addEventListener("touchstart",function (e) {
+
+				e.preventDefault();
+				e.stopPropagation();
+				//记下初始的位置：
+				this.origTop = this.style.top;
+				this.origLeft = this.style.left;
+				console.info("开始拖动，记下初始位置:"+this.origTop+"" +this.origLeft);
+
+				this.style.transition="none";     //清除css动画
+ 
+
+
+				this.style.zIndex = 100;
+				dx = e.targetTouches[0].pageX - this.offsetLeft; 
+				dy = e.targetTouches[0].pageY - this.offsetTop; 
+
+			});
+			pics[i].addEventListener("touchmove",function (e) {
+				var newX = e.targetTouches[0].pageX - dx;
+				var newY = e.targetTouches[0].pageY - dy;
+				//更新style.left,style.top
+				this.style.left = newX +"px";
+				this.style.top = newY +"px";
+
+
+			});
+			pics[i].addEventListener("touchend",function(e){
+
+				var nowX = 0;
+				var nowY = 0;
+				console.info(e);
+
+				this.style.zIndex = 0; //拖拽结束后放置底层
+
+				//1.获取接触点的位置(相对与窗口而言的)
+				nowX = e.changedTouches[0].pageX;
+				nowY = e.changedTouches[0].pageY;
+
+				//2.剪掉外部容器与窗口之间的边距
+				nowX = nowX - picBox.offsetLeft;
+				nowY = nowY - picBox.offsetTop;
+
+
+				// console.info(e.changedTouches[0].pageX,e.changedTouches[0].pageY);
+				console.info(nowX,nowY);
+				//3.根据e.target,nowX,nowY 去找到：哪一个子块，在接触点的下方。
+				//e.target表示当前正在被移动的元素
+				//找出要交换的目标
+				var t = getEle(e.target,nowX,nowY);
+
+				
+
+				if(t == e.target) //你找到的目标就是自己，不要交换
+				{
+					t.style.transition="all 0.5s";
+					console.info("你找到的目标就是自己，不要交换");
+					console.info(this.origTop);
+					console.info(e.target.origTop);
+
+					console.info(t.origTop);
+
+					//t.style.transition="all 0.5s";
+					//回去原来的位置
+					 t.style.top = this.origTop;
+					 t.style.left = this.origLeft;
+
+
+				}
+				else{
+					// 让交换的过程动起来
+					t.style.transition="all 0.5s";
+					e.target.style.transition="all 0.5s";
+
+					console.info("要交换.用当前移动的元素初始位置与目标进行交换");
+					
+					// left
+					// t = eleA;
+					// eleA = eleB;
+					// eleB = t;
+					var _left ;
+					_left = t.style.left;
+					t.style.left = e.target.origLeft;
+					e.target.style.left = _left;
+
+					var _top ;
+					_top = t.style.top;
+					t.style.top = e.target.origTop;
+					e.target.style.top = _top;
+
+
+					var _index;
+					_index = t.getAttribute("data-index");//获取元素t的data-index属性
+
+					t.setAttribute("data-index",e.target.getAttribute("data-index") );//元素t的data-index属性改成e.target这个元素的data-index
+
+					//元素e.target的data-index属性改成 _index
+					e.target.setAttribute("data-index",_index);
+
+					if( isSuccess() ){
+						console.info("done");
+					}
+
+					//判断是否成功
+					//
+					// e.target.addEventListener("transitionend",function(){
+					// 	if( isSuccess() ){
+					// 		//alert("done!!");
+							
+					// 	}
+					// });
+					
+
+
+
+
+
+					// var eleA,eleB;
+					// var t;
+					// t = eleA;
+					// eleA = eleB;
+					// eleB = t;
+					// 
+					
+
+				}
+				//
+
+
+			})
+
+		}
+
+		/**
+		 * 判断当前的状态是否成功
+		 * @return {Boolean} [description]
+		 */
+		function isSuccess(){
+			//成功的标记：data-index的顺序：1,2...9
+			var str="";
+			for (var i = 0; i < pics.length; i++) {
+				//console.info(pics[i].getAttribute("data-index") );
+				str+=pics[i].getAttribute("data-index");
+				
+			}
+			console.info(str);
+			if(str == "123456789"){
+				return true;
+			}
+			else
+				return false;
+		}
+
+		/**
+		 * 在这9个小块中，找到：哪一个小块在接触点nowx,nowy的下方。
+		 * @param  {[type]} ele  [当前被移动的元素]
+		 * @param  {[type]} nowX [接触点的x]
+		 * @param  {[type]} nowY [接触点的y]
+		 * @return {[type]}      [当前接触点在哪一个元素的上面就返回这个元素]
+		 */
+		function getEle(ele,nowX,nowY){
+			for (var i = 0; i < pics.length; i++) 
+			{
+
+				if(pics[i] != ele)
+				{
+					var top = parseInt( pics[i].style.top );
+					var left = parseInt( pics[i].style.left );
+					if(nowX > left && nowX < (left +100))
+					{
+						if(nowY > top && nowY <(top + 100))
+						{
+							console.info(i);
+							return pics[i]; //返回当期接触点下的元素
+						}
+					}
+				}
+				//console.info(top,left)
+			}
+			return ele;
+		}
+		console.info(pics);
+
+	</script>
+</body>
+</html>

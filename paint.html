@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta charset=utf-8>
+	<meta name=description content="">
+	<meta name=viewport content="width=device-width, initial-scale=1,user-scalable=no">
+	<title>Document</title>
+	<style>
+		*{
+			-moz-user-select:none;
+			-ms-user-select:none;
+			-webkit-user-select:none;
+			user-select:none;
+		}
+		body{
+			margin:0;
+
+		}
+		#canvas{
+			margin:0 auto;
+			display: block;
+		}
+		span{
+			display: inline-block;
+			width: 30px;
+			height: 30px;
+		}
+		.red{
+			background: red;
+		}
+		.green{
+			background: green;
+		}
+		.blue{
+			background: blue;
+		}
+		.gray{
+			font-size: 18px;
+		}
+
+		
+	</style>
+</head>
+<body>
+	<h1>canvas画图<span class="red"></span> <span class="green"></span> <span class="blue"></span><span class="gray">橡皮</span> </h1>
+	<canvas id="canvas" width="300px" height="500px" style="background:gray;"></canvas>
+
+	<script type="text/javascript">
+		
+		var can = document.getElementById("canvas");
+		var color = "blue";
+
+		// var oldX = 0;
+		// var oldY = 0;
+
+		var spans = document.getElementsByTagName("span");
+		for (var i = 0; i < spans.length; i++) {
+			spans[i].addEventListener("touchstart",function (e) {
+				//获取当前是哪一个span被touch
+				console.info(e.target.className)
+				color = e.target.className;//当前的颜色
+			})
+		}
+
+		// can.addEventListener("touchend",function (e) {
+		// 	console.info("end....")
+		// 	// body...
+		// })
+		can.addEventListener("touchmove",function(e){
+
+			//oldX = e.targetTouches[0].pageX; //记录这个点
+
+			e.preventDefault();
+			e.stopPropagation();
+			//接触点在画布上的Y值 = pageY - 画布元素的上边距
+			var dy = e.targetTouches[0].pageY - this.offsetTop;
+			var dx = e.targetTouches[0].pageX - this.offsetLeft;
+
+			console.info( dx,dy);//(clientX,screenX)
+			//在移动的过程中，在当前接触点的位置，画一个圆
+			
+			//1.创建画布
+			var ct = can.getContext("2d");
+			//2.开始路径
+			ct.beginPath();
+			//3.调用函数，画图
+			ct.arc(dx,dy,5,0,2*Math.PI);
+			//4.封闭path
+			ct.closePath();
+			//5.填充颜色
+			ct.fillStyle = color;
+			ct.fill();
+			//
+
+		})
+		
+
+	</script>
+
+	
+	
+</body>
+</html>
