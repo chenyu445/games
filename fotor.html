@@ -7,14 +7,16 @@
 	<title>Document</title>
 	<style>
 		#picBox{
-			background: url("image/man.jpg");
+			background: url("images/main.png");
+			background-size:100% 100%;
 			height: 300px;
 			width: 300px;
 			position: relative;
 		}
 		.pic{
 			position: absolute;
-			background: url("image/man.jpg");
+			background: url("images/main.png");
+			background-size:300px 300px;
 			height: 100px;
 			width: 100px;
 			border:3px solid #fff;
@@ -27,15 +29,15 @@
 <body>
 	<h1>拼图游戏 <button id="startBtn">go</button></h1>
 	<div id="picBox">
-		<div class="pic" data-index="1" style="left:0px;top:0px;background-position:0px 0px;">0</div>
-		<div class="pic" data-index="2"  style="left:100px;top:0px;background-position:-100px 0px;">1</div>
-		<div class="pic" data-index="3"  style="left:200px;top:0px;background-position:-200px 0px;">2</div>
-		<div class="pic" data-index="4"  style="left:0px;top:100px;background-position:0px -100px;">3</div>
-		<div class="pic" data-index="5"  style="left:100px;top:100px;background-position:-100px -100px;">4</div>
-		<div class="pic" data-index="6"  style="left:200px;top:100px;background-position:-200px -100px;">5</div>
-		<div class="pic" data-index="7"  style="left:0px;top:200px;background-position:0px -200px;">6</div>
-		<div class="pic" data-index="8"  style="left:100px;top:200px;background-position:-100px -200px;">7</div>
-		<div class="pic" data-index="9"  style="left:200px;top:200px;background-position:-200px -200px;">8</div>
+		<div class="pic" data-index="1" style="left:0px;top:0px;background-position:0px 0px;"></div>
+		<div class="pic" data-index="2"  style="left:100px;top:0px;background-position:-100px 0px;"></div>
+		<div class="pic" data-index="3"  style="left:200px;top:0px;background-position:-200px 0px;"></div>
+		<div class="pic" data-index="4"  style="left:0px;top:100px;background-position:0px -100px;"></div>
+		<div class="pic" data-index="5"  style="left:100px;top:100px;background-position:-100px -100px;"></div>
+		<div class="pic" data-index="6"  style="left:200px;top:100px;background-position:-200px -100px;"></div>
+		<div class="pic" data-index="7"  style="left:0px;top:200px;background-position:0px -200px;"></div>
+		<div class="pic" data-index="8"  style="left:100px;top:200px;background-position:-100px -200px;"></div>
+		<div class="pic" data-index="9"  style="left:200px;top:200px;background-position:-200px -200px;"></div>
 	</div>
 	<script>
 	// var pics = picBox.getElementsByTagName("div");
